@@ -5,12 +5,13 @@
   "description": "Simple platform IOT - Database module",
   "main": "index.js",
   "scripts": {
+    "test": "DEBUG=platziverse:* nyc --reporter=lcov ava test/ --verbose",
     "lint": "standard",
     "setup": "DEBUG=platziverse:* node setup.js"
   },
   "author": "Angel Dominguez <angeldominguezg@gmail.com> (https://github.com/angeldominguezg)",
   "license": "MIT",
-   "devDependencies": {
+  "devDependencies": {
     "ava": "^0.25.0",
     "nyc": "^11.4.1",
     "proxyquire": "^1.8.0",

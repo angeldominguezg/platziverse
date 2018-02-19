@@ -3,8 +3,8 @@
  * Setup database connection
  * Return database instance
 **/
-const Sequelize = require("sequelize");
-let sequelize = null;
+const Sequelize = require('sequelize')
+let sequelize = null
 
 module.exports = function setupDatabase (config) {
   // Si la instancia no existe, creo la instancia de conexion a la base de datos
