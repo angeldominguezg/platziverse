@@ -14,9 +14,15 @@ let MetricStub = {
 }
 let single = Object.assign({}, agentFixtures.single)
 let id = 1
+let uuid = "yyy-yyy-yyy"
 let AgentStub = null
 let db = null
 let sandbox = null
+let uuidArgs = {
+  where: {
+    uuid
+  }
+}
 
 // Antes de cada test ejecuta la siguiente funcion asincrona
 test.beforeEach(async () => {
@@ -24,9 +30,19 @@ test.beforeEach(async () => {
   AgentStub = {
     hasMany: sandbox.spy()
   }
+
   // Model findById Stub 
   AgentStub.findById = sandbox.stub()
   AgentStub.findById.withArgs(id).returns(Promise.resolve(agentFixtures.findById(id)))
+
+  // Model findOne
+  AgentStub.findOne = sandbox.stub()
+  AgentStub.findOne.withArgs(uuidArgs).returns(Promise.resolve(agentFixtures.byUuid(uuid)))
+
+  // Model Update Stub
+  AgentStub.update = sandbox.stub()
+  AgentStub.update.withArgs(single, uuidArgs).returns(Promise.resolve(single))
+
 
   const setupDatabase = proxyquire('../', {
     './models/agent': () => AgentStub,
@@ -56,4 +72,14 @@ test.serial('Agent#findById', async t => {
   t.true(AgentStub.findById.calledOnce, 'findById should be calles once')
   t.true(AgentStub.findById.calledWith(id), 'findById should be called with args')
   t.deepEqual(agent, agentFixtures.findById(id), 'Should be the same.')
+})
+
+test.serial('Agent#createOrUpdate - exists', async t => {
+  let agent = await db.Agent.createOrUpdate(single)
+  // que sea igual el ajente que retorna la funcion al agente que se intenta crear
+  t.true(AgentStub.findOne.called, 'findOne should be called on model')
+  t.true(AgentStub.findOne.calledTwice, 'findOne should be called twice')
+  t.true(AgentStub.update.calledOnce, 'update should be called once')
+  t.deepEqual(agent, single, 'Agent should be the same')
+
 })
