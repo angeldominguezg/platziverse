@@ -35,7 +35,7 @@ module.exports = {
   single: agent,
   all: agents,
   connected: agents.filter(a => a.connected), // retorna los connectados
-  platzi: agents.filter(a => a.username === "platzi"), // retorna los del usuario platzi
+  platzi: agents.filter(a => a.username === 'platzi'), // retorna los del usuario platzi
   byUuid: id => agents.filter(a => a.uuid === id).shift(), // retorna por uuid
   findById: id => agents.filter(a => a.id === id).shift() // retorna por id
-};
+}

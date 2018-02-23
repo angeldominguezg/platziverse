@@ -1,11 +1,11 @@
 'use strict'
 
-module.exports = function setupAgent(AgentModel) {
-  function findById(id) {
+module.exports = function setupAgent (AgentModel) {
+  function findById (id) {
     return AgentModel.findById(id)
   }
 
-  async function createOrUpdate(agent) {
+  async function createOrUpdate (agent) {
     const cond = {
       where: {
         uuid: agent.uuid
@@ -41,13 +41,18 @@ module.exports = function setupAgent(AgentModel) {
   }
 
   function findByUsername (username) {
-    return AgentModel.findall({ 
-      where: { 
+    return AgentModel.findall({
+      where: {
         username,
         connected: true
-      } 
-    });
+      }
+    })
   }
 
-  return { findById, createOrUpdate, findByUuid, findAll, findConected, findByUsername };
+  return { findById,
+    createOrUpdate,
+    findByUuid,
+    findAll,
+    findConected,
+    findByUsername }
 }

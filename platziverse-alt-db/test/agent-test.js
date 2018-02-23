@@ -14,7 +14,7 @@ let MetricStub = {
 }
 let single = Object.assign({}, agentFixtures.single)
 let id = 1
-let uuid = "yyy-yyy-yyy"
+let uuid = 'yyy-yyy-yyy'
 let AgentStub = null
 let db = null
 let sandbox = null
@@ -22,6 +22,14 @@ let uuidArgs = {
   where: {
     uuid
   }
+}
+let newAgent = {
+  uuid: '123-123-123',
+  name: 'test',
+  username: 'test',
+  hostname: 'test',
+  pid: 0,
+  connected: false
 }
 
 // Antes de cada test ejecuta la siguiente funcion asincrona
@@ -31,7 +39,7 @@ test.beforeEach(async () => {
     hasMany: sandbox.spy()
   }
 
-  // Model findById Stub 
+  // Model findById Stub
   AgentStub.findById = sandbox.stub()
   AgentStub.findById.withArgs(id).returns(Promise.resolve(agentFixtures.findById(id)))
 
@@ -43,6 +51,15 @@ test.beforeEach(async () => {
   AgentStub.update = sandbox.stub()
   AgentStub.update.withArgs(single, uuidArgs).returns(Promise.resolve(single))
 
+  // Model Create Stub
+  AgentStub.create = sandbox.stub()
+  AgentStub.create.withArgs(newAgent).returns(Promise.resolve({
+    toJSON () { return newAgent }
+  }))
+
+  // Model FindAll Stub
+  AgentStub.findAll = sandbox.stub()
+  AgentStub.findAll.withArgs().returns(Promise.resolve(agentFixtures.all))
 
   const setupDatabase = proxyquire('../', {
     './models/agent': () => AgentStub,
@@ -83,9 +100,37 @@ test.serial('Agent#createOrUpdate - exists', async t => {
   t.deepEqual(agent, single, 'Agent should be the same')
 })
 
-// Agent -> no exists
+test.serial('Agent#createOrpdate - new', async t => {
+  let agent = await db.Agent.createOrUpdate(newAgent)
 
-test.serial('Agent#findByUuid', async t=> {
+  t.true(AgentStub.findOne.called, 'findOne should be called on model')
+  t.true(AgentStub.findOne.calledOnce, 'findOne should be called once')
+  t.true(AgentStub.findOne.calledWith({
+    where: { uuid: newAgent.uuid }
+  }), 'FindOne Should be called with args')
+
+  t.true(AgentStub.create.called, 'create should be calle on model')
+  t.true(AgentStub.create.calledOnce, 'create should be called once')
+  t.true(AgentStub.create.calledWith(newAgent), 'create should be called with specified args')
+
+  t.deepEqual(agent, newAgent, 'Agent should be the same')
+})
+
+test.serial('Agent#findByUuid', async t => {
   let agent = await db.Agent.findByUuid(uuid)
-  t.deepEqual(agent, single, "Agent should be the same")
+
+  t.true(AgentStub.findOne.called, 'findOne should be calle on model')
+  t.true(AgentStub.findOne.calledOnce, 'findOne should be called once')
+  t.deepEqual(agent, single, 'Agent should be the same')
+})
+
+test.serial('Agent#findAll', async t => {
+  let agents = await db.Agent.findAll()
+
+  t.true(AgentStub.findAll.called, 'findAll should be called on model')
+  t.true(AgentStub.findAll.calledOnce, 'findAll should be called once')
+  t.true(AgentStub.findAll.calledWith(), 'findAll should be called without args')
+
+  t.is(agents.length, agentFixtures.all.length, 'agents should be the same amount')
+  t.deepEqual(agents, agentFixtures.all, 'agents should be the same')
 })
