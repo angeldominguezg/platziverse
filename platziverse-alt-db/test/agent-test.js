@@ -81,5 +81,11 @@ test.serial('Agent#createOrUpdate - exists', async t => {
   t.true(AgentStub.findOne.calledTwice, 'findOne should be called twice')
   t.true(AgentStub.update.calledOnce, 'update should be called once')
   t.deepEqual(agent, single, 'Agent should be the same')
+})
 
+// Agent -> no exists
+
+test.serial('Agent#findByUuid', async t=> {
+  let agent = await db.Agent.findByUuid(uuid)
+  t.deepEqual(agent, single, "Agent should be the same")
 })

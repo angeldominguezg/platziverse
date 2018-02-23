@@ -19,7 +19,7 @@ module.exports = function setupAgent(AgentModel) {
     const result = await AgentModel.create(agent)
     return result.toJSON()
   }
-  // Hacer los test para los casos findByUuid, findAll, findConected
+  // Hacer los test para los casos findByUuid, findAll, findConected, findByUsername
   function findByUuid (uuid) {
     return AgentModel.findOne({
       where: {
@@ -49,5 +49,5 @@ module.exports = function setupAgent(AgentModel) {
     });
   }
 
-  return { findById, createOrUpdate, findByUuid, findAll, findConected, findByUsername }
+  return { findById, createOrUpdate, findByUuid, findAll, findConected, findByUsername };
 }
