@@ -22,7 +22,7 @@ const agents = [
     username: 'test'
   }),
   extend(agent, { id: 3, uuid: 'yyy-yyy-yyx' }),
-  extend(agent, { id: 4, uuid: 'yyy-yyy-yyz', username: 'test' })
+  extend(agent, { id: 4, uuid: 'yyy-yyy-yyz', username: 'test 2' })
 ]
 
 function extend (obj, values) {
@@ -35,7 +35,7 @@ module.exports = {
   single: agent,
   all: agents,
   connected: agents.filter(a => a.connected), // retorna los connectados
-  platzi: agents.filter(a => a.username === 'platzi'), // retorna los del usuario platzi
+  platzi: agents.filter(a => a.username === 'platzi'), // retorna usuario platzi
   byUuid: id => agents.filter(a => a.uuid === id).shift(), // retorna por uuid
   findById: id => agents.filter(a => a.id === id).shift() // retorna por id
 }

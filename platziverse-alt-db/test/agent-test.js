@@ -31,6 +31,12 @@ let newAgent = {
   pid: 0,
   connected: false
 }
+let connectedArgs = {
+  where: { connected: true }
+}
+let usernameArgs = {
+  where: { username: 'platzi', connected: true }
+}
 
 // Antes de cada test ejecuta la siguiente funcion asincrona
 test.beforeEach(async () => {
@@ -60,6 +66,12 @@ test.beforeEach(async () => {
   // Model FindAll Stub
   AgentStub.findAll = sandbox.stub()
   AgentStub.findAll.withArgs().returns(Promise.resolve(agentFixtures.all))
+
+  // FindConnected Stub
+  AgentStub.findAll.withArgs(connectedArgs).returns(Promise.resolve(agentFixtures.connected))
+
+  // FindByUsername Stub
+  AgentStub.findAll.withArgs(usernameArgs).returns(Promise.resolve(agentFixtures.platzi))
 
   const setupDatabase = proxyquire('../', {
     './models/agent': () => AgentStub,
@@ -133,4 +145,23 @@ test.serial('Agent#findAll', async t => {
 
   t.is(agents.length, agentFixtures.all.length, 'agents should be the same amount')
   t.deepEqual(agents, agentFixtures.all, 'agents should be the same')
+})
+
+test.serial('Agent#findConnected', async t => {
+  let agents = await db.Agent.findConnected()
+  t.true(AgentStub.findAll.called, 'findAll should be calle on model')
+  t.true(AgentStub.findAll.calledOnce, 'findAll should be called once')
+  t.true(AgentStub.findAll.calledWith(connectedArgs), 'findAll should be called with connected args')
+
+  t.is(agents.length, agentFixtures.connected.length, 'agents should be the same amount')
+  t.deepEqual(agents, agentFixtures.connected, 'agents should be the same')
+})
+
+test.serial('Agent#findByUsername', async t => {
+  let agents = await db.Agent.findByUsername('platzi')
+  t.true(AgentStub.findAll.called, 'findAll should be calle on model')
+  t.true(AgentStub.findAll.calledOnce, 'findAll should be called once')
+  t.true(AgentStub.findAll.calledWith(usernameArgs), 'findAll should be called with username args')
+
+  t.deepEqual(agents, agentFixtures.platzi, 'agents should be the same')
 })

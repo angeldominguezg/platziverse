@@ -32,7 +32,7 @@ module.exports = function setupAgent (AgentModel) {
     return AgentModel.findAll()
   }
 
-  function findConected () {
+  function findConnected () {
     return AgentModel.findAll({
       where: {
         connected: true
@@ -41,7 +41,7 @@ module.exports = function setupAgent (AgentModel) {
   }
 
   function findByUsername (username) {
-    return AgentModel.findall({
+    return AgentModel.findAll({
       where: {
         username,
         connected: true
@@ -49,10 +49,5 @@ module.exports = function setupAgent (AgentModel) {
     })
   }
 
-  return { findById,
-    createOrUpdate,
-    findByUuid,
-    findAll,
-    findConected,
-    findByUsername }
+  return { findById, createOrUpdate, findByUuid, findAll, findConnected, findByUsername }
 }
