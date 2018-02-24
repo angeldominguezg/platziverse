@@ -12,6 +12,7 @@ let config = {
 let MetricStub = {
   belongsTo: sinon.spy()
 }
+
 let single = Object.assign({}, agentFixtures.single)
 let id = 1
 let uuid = 'yyy-yyy-yyy'
