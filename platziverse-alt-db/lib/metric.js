@@ -16,13 +16,15 @@ module.exports = function setupMetric (MetricModel, AgentModel) {
     return MetricModel.findAll({
       attributes: ['type'],
       group: ['type'],
-      include: [{
-        attributes: [],
-        model: AgentModel,
-        where: {
-          uuid
+      include: [
+        {
+          attributes: [],
+          model: AgentModel,
+          where: {
+            uuid
+          }
         }
-      }],
+      ],
       raw: true
     })
   }
@@ -35,13 +37,15 @@ module.exports = function setupMetric (MetricModel, AgentModel) {
       },
       limit: 20,
       order: [['createdAt', 'DESC']],
-      include: [{
-        attributes: [],
-        model: AgentModel,
-        where: {
-          uuid
+      include: [
+        {
+          attributes: [],
+          model: AgentModel,
+          where: {
+            uuid
+          }
         }
-      }],
+      ],
       raw: true
     })
   }

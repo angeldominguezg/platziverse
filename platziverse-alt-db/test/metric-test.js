@@ -3,7 +3,7 @@ const test = require('ava')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
 const agentFixtures = require('./fixtures/agent')
-// const metricFixtures = require('./fixtures/metric')
+const metricFixtures = require('./fixtures/metric')
 
 let config = {
   logging() {}
@@ -23,15 +23,25 @@ let uuidArgs = {
   where: { uuid }
 }
 
+let metricUuidArgs = {
+  attributes: ['type'],
+  group: ['type'],
+  include: [
+    {
+      attributes: [],
+      model: AgentStub,
+      where: {
+        uuid
+      }
+    }
+  ],
+  raw: true
+}
+
 test.beforeEach(async () => {
   sandbox = sinon.sandbox.create()
   MetricStub = { belongsTo: sandbox.spy() }
   AgentStub = { hasMany: sinon.spy() }
-
-  const setupDatabase = proxyquire('../', {
-    './models/agent': () => AgentStub,
-    './models/metric': () => MetricStub
-  })
 
   AgentStub.findOne = sandbox.stub()
   AgentStub.findOne
@@ -46,6 +56,17 @@ test.beforeEach(async () => {
       }
     })
   )
+
+  MetricStub.findAll = sandbox.stub()
+  MetricStub.findAll.withArgs().returns(Promise.resolve(metricFixtures.all))
+  MetricStub.findAll
+    .withArgs(metricUuidArgs)
+    .returns(Promise.resolve(metricFixtures.findByAgentUuid(uuid)))
+
+  const setupDatabase = proxyquire('../', {
+    './models/agent': () => AgentStub,
+    './models/metric': () => MetricStub
+  })
 
   db = await setupDatabase(config)
 })
@@ -97,3 +118,13 @@ test.serial('Metric#Create', async t => {
 })
 
 // test for findByAgentUuid
+test.serial('Metric#findByAgentUuid', async t => {
+  let metric = await db.Metric.findByAgentUuid(uuid)
+
+  t.true(MetricStub.findAll.called, 'findAll should be called on model')
+  t.true(MetricStub.findAll.calledOnce, 'findAll should be called once')
+
+  // TODO: Corregir estos test
+  t.true(MetricStub.findAll.calledWith(metricUuidArgs), 'findAll should be called with specified metricUuidArgs')
+  t.deepEqual( metric, metricFixtures.findByAgentUuid(uuid), 'should be the same')
+})
