@@ -9,7 +9,7 @@ const metric = {
   id: 1,
   agentId: 1,
   type: 'CPU',
-  value: '18%',
+  value: '2%',
   createdAt: new Date(),
   agent: agentFixtures.findById(1)
 }
@@ -27,7 +27,7 @@ const metrics = [
   })
 ]
 
-function findByAgentUuid(uuid) {
+function findByAgentUuid (uuid) {
   return metrics
     .filter(m => (m.agent ? m.agent.uuid === uuid : false))
     .map(m => {
@@ -39,7 +39,7 @@ function findByAgentUuid(uuid) {
     })
 }
 
-function findByTypeAgentUuid(type, uuid) {
+function findByTypeAgentUuid (type, uuid) {
   return metrics
     .filter(m => m.type === type && (m.agent ? m.agent.uuid === uuid : false))
     .map(m => {

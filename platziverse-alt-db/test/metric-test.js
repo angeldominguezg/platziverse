@@ -14,12 +14,12 @@ let sandbox = null
 let AgentStub = null
 let MetricStub = null
 let uuid = 'yyy-yyy-yyy'
-let type = 'memory'
+let type = 'CPU'
 
 let newMetric = {
-  agentid: 1,
-  type: 'memory',
-  value: '128mb'
+  agentId: 1,
+  type: 'CPU',
+  value: '18%'
 }
 
 let uuidArgs = {
@@ -87,6 +87,9 @@ test.beforeEach(async () => {
   MetricStub.findAll
     .withArgs(metricUuidArgs)
     .returns(Promise.resolve(metricFixtures.findByAgentUuid(uuid)))
+  MetricStub.findAll
+    .withArgs(typeUuidArgs)
+    .returns(Promise.resolve(metricFixtures.findByTypeAgentUuid(type, uuid)))
 
   const setupDatabase = proxyquire('../', {
     './models/agent': () => AgentStub,
@@ -149,10 +152,33 @@ test.serial('Metric#findByAgentUuid', async t => {
   t.true(MetricStub.findAll.called, 'findAll should be called on model')
   t.true(MetricStub.findAll.calledOnce, 'findAll should be called once')
 
-  // TODO: Corregir estos test
   t.true(
     MetricStub.findAll.calledWith(metricUuidArgs),
     'findAll should be called with specified metricUuidArgs'
   )
-  t.deepEqual( metric, metricFixtures.findByAgentUuid(uuid), 'should be the same')
+  t.deepEqual(
+    metric,
+    metricFixtures.findByAgentUuid(uuid),
+    'should be the same'
+  )
+})
+
+// test for findByTypeAgentUuid
+test.serial('Metric#findByTypeAgentUuid', async t => {
+  let metric = await db.Metric.findByTypeAgentUuid(type, uuid)
+
+  t.true(MetricStub.findAll.called, 'findAll should be called on model')
+  t.true(MetricStub.findAll.calledOnce, 'findAll should be called once')
+
+  // Revisar estos test
+  t.true(
+    MetricStub.findAll.calledWith(typeUuidArgs),
+    'findall should be called with specified typeUuidArgs'
+  )
+  // Revisar estos test
+  t.deepEqual(
+    metric,
+    metricFixtures.findByTypeAgentUuid(type, uuid),
+    'should be the same'
+  )
 })

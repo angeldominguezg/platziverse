@@ -2,12 +2,12 @@
 
 'use strict'
 
-function extend(obj, values) {
+function extend (obj, values) {
   const clone = Object.assign({}, obj)
   return Object.assign(clone, values)
 }
 
-function sortBy(property) {
+function sortBy (property) {
   return (a, b) => {
     let aProp = a[property]
     let bProp = b[property]
