@@ -14,11 +14,14 @@ let sandbox = null
 let AgentStub = null
 let MetricStub = null
 let uuid = 'yyy-yyy-yyy'
+let type = 'memory'
+
 let newMetric = {
   agentid: 1,
   type: 'memory',
   value: '128mb'
 }
+
 let uuidArgs = {
   where: { uuid }
 }
@@ -26,6 +29,25 @@ let uuidArgs = {
 let metricUuidArgs = {
   attributes: ['type'],
   group: ['type'],
+  include: [
+    {
+      attributes: [],
+      model: AgentStub,
+      where: {
+        uuid
+      }
+    }
+  ],
+  raw: true
+}
+
+let typeUuidArgs = {
+  attributes: ['id', 'type', 'value', 'createdAt'],
+  where: {
+    type
+  },
+  limit: 20,
+  order: [['createdAt', 'DESC']],
   include: [
     {
       attributes: [],
@@ -56,6 +78,9 @@ test.beforeEach(async () => {
       }
     })
   )
+
+  metricUuidArgs.include[0].model = AgentStub
+  typeUuidArgs.include[0].model = AgentStub
 
   MetricStub.findAll = sandbox.stub()
   MetricStub.findAll.withArgs().returns(Promise.resolve(metricFixtures.all))
@@ -125,6 +150,9 @@ test.serial('Metric#findByAgentUuid', async t => {
   t.true(MetricStub.findAll.calledOnce, 'findAll should be called once')
 
   // TODO: Corregir estos test
-  t.true(MetricStub.findAll.calledWith(metricUuidArgs), 'findAll should be called with specified metricUuidArgs')
+  t.true(
+    MetricStub.findAll.calledWith(metricUuidArgs),
+    'findAll should be called with specified metricUuidArgs'
+  )
   t.deepEqual( metric, metricFixtures.findByAgentUuid(uuid), 'should be the same')
 })
